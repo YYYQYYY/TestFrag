@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.testfrag.adapter.FragmentVPAdapter;
 import com.example.testfrag.fragment.TestFm;
+import com.yuqinyidev.android.azaz.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +127,7 @@ public class MainActivity extends FragmentActivity {
                     scrollView.scrollBy(-(int) (0.25 * screenWidth), 0);
                 }
                 Toast.makeText(MainActivity.this, "selected" + (position + 1), Toast.LENGTH_SHORT).show();
-                for (int i=0;i<titleList.size();i++){
+                for (int i = 0; i < titleList.size(); i++) {
                     //将所有的圆点设置为为选中时候的图片
                     mDots.get(i).setImageResource(R.drawable.vp_point_enable_false);
                 }

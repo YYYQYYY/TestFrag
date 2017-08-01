@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.yuqinyidev.android.azaz.R;
+
 import java.util.Random;
 
 public class Main2Activity extends Activity {
