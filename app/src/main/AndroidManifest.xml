@@ -13,15 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!--<activity android:name=".Main2Activity">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <activity android:name=".weather.mvp.ui.activity.WeatherMainActivity">
+        <activity android:name="com.example.testfrag.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,7 +21,15 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".weather.mvp.ui.activity.WeatherActivity" />
+        <!--<activity android:name=".weather.mvp.ui.activity.WeatherMainActivity">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+
+        <!--<activity android:name=".weather.mvp.ui.activity.WeatherActivity" />-->
 
     </application>
 

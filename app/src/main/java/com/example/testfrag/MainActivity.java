@@ -32,8 +32,6 @@ public class MainActivity extends FragmentActivity {
 
     private int screenWidth; //屏幕宽度
     private ViewPager vp;
-    private HorizontalScrollView scrollView;
-    private List<TextView> textViews = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +39,6 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         vp = findViewById(R.id.viewPager);
-        scrollView = findViewById(R.id.scrollView);
         mLinearLayout = findViewById(R.id.viewpager_linerlayout);
 
         initList(); //初始化内容和标题
@@ -56,13 +53,6 @@ public class MainActivity extends FragmentActivity {
             TestFm testFm = TestFm.newInstance(contentList, i);
             fragmentList.add(testFm);
         }
-
-        //初始化导航栏布局
-        LinearLayout navigationLl = new LinearLayout(this);
-        LinearLayout.LayoutParams mParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        navigationLl.setLayoutParams(mParams);
-        navigationLl.setOrientation(LinearLayout.HORIZONTAL);
-        navigationLl.setBackgroundColor(Color.GREEN);
 
         //往导航栏添加标题
         if (titleList.size() <= 3) { //标题栏小于4个时，平分屏幕宽度
@@ -80,8 +70,6 @@ public class MainActivity extends FragmentActivity {
                         vp.setCurrentItem(finalI);
                     }
                 });
-                textViews.add(tv);
-                navigationLl.addView(tv, params); //往导航栏添加标题
             }
         } else { //标题大于四个，重新规划textView大小
             LinearLayout.LayoutParams params1 = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -100,17 +88,8 @@ public class MainActivity extends FragmentActivity {
                         vp.setCurrentItem(finalI);
                     }
                 });
-                textViews.add(tv);
-                navigationLl.addView(tv, params1);
             }
         }
-
-        //第一个标题默认红色
-        if (textViews != null && textViews.size() > 0) {
-            textViews.get(0).setTextColor(Color.RED);
-        }
-
-        scrollView.addView(navigationLl); //往scrollView添加导航栏
 
         vp.setAdapter(new FragmentVPAdapter(getSupportFragmentManager(), (ArrayList<TestFm>) fragmentList));
         vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -121,11 +100,6 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onPageSelected(int position) {
                 setSelect(position);
-                if (position >= 4) {
-                    scrollView.scrollBy((int) (0.25 * screenWidth), 0);
-                } else if (position < 4) {
-                    scrollView.scrollBy(-(int) (0.25 * screenWidth), 0);
-                }
                 Toast.makeText(MainActivity.this, "selected" + (position + 1), Toast.LENGTH_SHORT).show();
                 for (int i = 0; i < titleList.size(); i++) {
                     //将所有的圆点设置为为选中时候的图片
@@ -156,10 +130,6 @@ public class MainActivity extends FragmentActivity {
 
     public void setSelect(int position) {
         vp.setCurrentItem(position);
-        for (int i = 0; i < textViews.size(); i++) {
-            textViews.get(i).setTextColor(Color.BLACK);
-        }
-        textViews.get(position).setTextColor(Color.RED);
     }
 
     public void initList() {

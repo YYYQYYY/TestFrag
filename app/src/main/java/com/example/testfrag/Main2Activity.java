@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.yuqinyidev.android.azaz.R;
+import com.yuqinyidev.android.framework.widget.LoopViewPager;
 
 import java.util.Random;
 
