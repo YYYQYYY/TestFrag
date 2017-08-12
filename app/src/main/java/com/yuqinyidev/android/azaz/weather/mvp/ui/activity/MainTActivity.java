@@ -49,6 +49,8 @@ public class MainTActivity extends FragmentActivity {
         mLinearLayout = findViewById(R.id.viewpager_linerlayout);
 
         int currentCityIdx = 0;
+        mDots = new ArrayList<>();//底部圆点集合的初始化
+
         initData();
 
         //获取屏幕宽度
@@ -74,6 +76,14 @@ public class MainTActivity extends FragmentActivity {
                     vp.setCurrentItem(finalI);
                 }
             });
+
+            //根据界面数量动态添加圆点
+            ImageView imageView = new ImageView(this);
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(35, 35));//设置ImageView的宽度和高度
+            imageView.setPadding(5, 5, 5, 5);//设置圆点的Padding，与周围的距离
+            imageView.setImageResource(R.drawable.vp_point_enable_false);//设置图片
+            mDots.add(imageView);//将该图片添加到圆点集合中
+            mLinearLayout.addView(imageView);//将图片添加到LinearLayout中
         }
 
 //        //往导航栏添加标题
@@ -136,6 +146,7 @@ public class MainTActivity extends FragmentActivity {
             }
         });
         vp.setCurrentItem(currentCityIdx);
+        mDots.get(currentCityIdx).setImageResource(R.drawable.vp_point_enable_true);
     }
 
     private void initData() {
@@ -169,21 +180,21 @@ public class MainTActivity extends FragmentActivity {
 //                contentList.add(weatherString);
 //            }
 //        }
-        initDots();
+//        initDots();
     }
 
-    private void initDots() {
-        mDots = new ArrayList<>();//底部圆点集合的初始化
-        for (int i = 0; i < titleList.size(); i++) {//根据界面数量动态添加圆点
-            ImageView imageView = new ImageView(this);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(35, 35));//设置ImageView的宽度和高度
-            imageView.setPadding(5, 5, 5, 5);//设置圆点的Padding，与周围的距离
-            imageView.setImageResource(R.drawable.vp_point_enable_false);//设置图片
-            mDots.add(imageView);//将该图片添加到圆点集合中
-            mLinearLayout.addView(imageView);//将图片添加到LinearLayout中
-        }
-        mDots.get(0).setImageResource(R.drawable.vp_point_enable_true);
-    }
+//    private void initDots() {
+//        mDots = new ArrayList<>();//底部圆点集合的初始化
+//        for (int i = 0; i < titleList.size(); i++) {//根据界面数量动态添加圆点
+//            ImageView imageView = new ImageView(this);
+//            imageView.setLayoutParams(new ViewGroup.LayoutParams(35, 35));//设置ImageView的宽度和高度
+//            imageView.setPadding(5, 5, 5, 5);//设置圆点的Padding，与周围的距离
+//            imageView.setImageResource(R.drawable.vp_point_enable_false);//设置图片
+//            mDots.add(imageView);//将该图片添加到圆点集合中
+//            mLinearLayout.addView(imageView);//将图片添加到LinearLayout中
+//        }
+//        mDots.get(0).setImageResource(R.drawable.vp_point_enable_true);
+//    }
 
     public void setSelect(int position) {
         vp.setCurrentItem(position);
