@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +25,7 @@ import java.util.List;
 
 public class MainTActivity extends FragmentActivity {
     private static final String SP_KEY_WEATHER_INFO_STRING = "sp_key_weather_info_string";
-    private static final String SP_KEY_CITY_ID = "sp_key_city_id";
+    //    private static final String SP_KEY_CITY_ID = "sp_key_city_id";
     private static final String SP_KEY_CURRENT_CITY_ID = "sp_key_current_city_id";
 
     private List<String> titleList = new ArrayList<>(); //标题链表
@@ -37,16 +36,16 @@ public class MainTActivity extends FragmentActivity {
     private String mCurrentCityId;
     //    private int screenWidth; //屏幕宽度
 
-    private ViewPager vp;
-    private LinearLayout mLinearLayout;//声明将来放置底部小圆点的LinearLayout
+    private ViewPager mViewPager;
+//    private LinearLayout mLinearLayout;//声明将来放置底部小圆点的LinearLayout
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        vp = findViewById(R.id.viewPager);
-        mLinearLayout = findViewById(R.id.viewpager_linerlayout);
+        mViewPager = findViewById(R.id.viewPager);
+        LinearLayout linearLayout = findViewById(R.id.viewpager_linerlayout);
 
         int currentCityIdx = 0;
         mDots = new ArrayList<>();//底部圆点集合的初始化
@@ -73,7 +72,7 @@ public class MainTActivity extends FragmentActivity {
                 @Override
                 public void onClick(View view) {
                     tv.setTextColor(Color.RED);
-                    vp.setCurrentItem(finalI);
+                    mViewPager.setCurrentItem(finalI);
                 }
             });
 
@@ -83,7 +82,7 @@ public class MainTActivity extends FragmentActivity {
             imageView.setPadding(5, 5, 5, 5);//设置圆点的Padding，与周围的距离
             imageView.setImageResource(R.drawable.vp_point_enable_false);//设置图片
             mDots.add(imageView);//将该图片添加到圆点集合中
-            mLinearLayout.addView(imageView);//将图片添加到LinearLayout中
+            linearLayout.addView(imageView);//将图片添加到LinearLayout中
         }
 
 //        //往导航栏添加标题
@@ -123,8 +122,8 @@ public class MainTActivity extends FragmentActivity {
 //            }
 //        }
 
-        vp.setAdapter(new FragmentWeatherAdapter(getSupportFragmentManager(), (ArrayList<WeatherDetailFragment>) fragmentList));
-        vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.setAdapter(new FragmentWeatherAdapter(getSupportFragmentManager(), (ArrayList<WeatherDetailFragment>) fragmentList));
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -145,8 +144,12 @@ public class MainTActivity extends FragmentActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
-        vp.setCurrentItem(currentCityIdx);
+        mViewPager.setCurrentItem(currentCityIdx);
         mDots.get(currentCityIdx).setImageResource(R.drawable.vp_point_enable_true);
+    }
+
+    public void setSelect(int position) {
+        mViewPager.setCurrentItem(position);
     }
 
     private void initData() {
@@ -154,7 +157,7 @@ public class MainTActivity extends FragmentActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainTActivity.this);
         String ps = prefs.getString(SP_KEY_WEATHER_INFO_STRING, null);
         mCurrentCityId = prefs.getString(SP_KEY_CURRENT_CITY_ID, "CN101210101");// 所在城市的城市ID
-        String[] cityIds = null;
+        String[] cityIds;
 
         if (StringUtils.isEmpty(ps)) {
             cityIds = new String[]{
@@ -195,11 +198,7 @@ public class MainTActivity extends FragmentActivity {
 //        }
 //        mDots.get(0).setImageResource(R.drawable.vp_point_enable_true);
 //    }
-
-    public void setSelect(int position) {
-        vp.setCurrentItem(position);
-    }
-
+//
 //    public void initList() {
 //        //添加标题
 //        titleList.add("标题一");
