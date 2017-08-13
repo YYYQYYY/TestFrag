@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yuqinyidev.android.azaz.R;
-import com.yuqinyidev.android.azaz.weather.mvp.model.entity.gson.Forecast;
+import com.yuqinyidev.android.azaz.weather.mvp.model.entity.gson.DailyForecast;
 import com.yuqinyidev.android.azaz.weather.mvp.model.entity.gson.Weather;
 import com.yuqinyidev.android.azaz.weather.mvp.model.service.AutoUpdateWeatherService;
 import com.yuqinyidev.android.azaz.weather.mvp.util.HttpUtil;
@@ -139,20 +139,20 @@ public class WeatherActivity extends AppCompatActivity {
         String cityName = weather.basic.cityName;
         String updateTime = weather.basic.update.updateTime.split(" ")[1];
         String degree = weather.now.temperature + "℃";
-        String weatherInfo = weather.now.more.info;
+        String weatherInfo = weather.now.condition.detailInfo;
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
         forecastLayout.removeAllViews();
-        for (Forecast forecast : weather.forecastList) {
+        for (DailyForecast forecast : weather.dailyForecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.item_weather_forecast_item, forecastLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.date_text);
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
             TextView minText = (TextView) view.findViewById(R.id.min_text);
             dateText.setText(forecast.date);
-            infoText.setText(forecast.more.info);
+            infoText.setText(forecast.condition.dayInfo);
             maxText.setText(forecast.temperature.max);
             minText.setText(forecast.temperature.min);
             forecastLayout.addView(view);
@@ -161,9 +161,9 @@ public class WeatherActivity extends AppCompatActivity {
             aqiText.setText(weather.aqi.city.aqi);
             pm25Text.setText(weather.aqi.city.pm25);
         }
-        String comfort = "舒适度： " + weather.suggestion.comfort.info;
-        String carWash = "洗车指数： " + weather.suggestion.carWash.info;
-        String sport = "运动建议： " + weather.suggestion.sport.info;
+        String comfort = "舒适度：" + weather.suggestion.comfort.briefIntroduction + "。\n　　　　" + weather.suggestion.comfort.detailInfo;
+        String carWash = "洗车指数：" + weather.suggestion.comfort.briefIntroduction + "。\n　　　　　" + weather.suggestion.carWash.detailInfo;
+        String sport = "运动建议：" + weather.suggestion.comfort.briefIntroduction + "。\n　　　　　" + weather.suggestion.sport.detailInfo;
         comfortText.setText(comfort);
         carWashText.setText(carWash);
         sportText.setText(sport);

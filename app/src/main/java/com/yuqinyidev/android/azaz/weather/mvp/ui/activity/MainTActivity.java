@@ -6,26 +6,43 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yuqinyidev.android.azaz.R;
+import com.yuqinyidev.android.azaz.weather.mvp.model.entity.gson.Weather;
 import com.yuqinyidev.android.azaz.weather.mvp.ui.adapter.FragmentWeatherAdapter;
 import com.yuqinyidev.android.azaz.weather.mvp.ui.fragment.WeatherDetailFragment;
+import com.yuqinyidev.android.azaz.weather.mvp.util.HttpUtil;
+import com.yuqinyidev.android.azaz.weather.mvp.util.Utility;
+import com.yuqinyidev.android.framework.utils.FileUtils;
 import com.yuqinyidev.android.framework.utils.StringUtils;
 import com.yuqinyidev.android.framework.utils.UiUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 public class MainTActivity extends FragmentActivity {
+    private static final String SPLASH_BG_NAME = "splash_bg.jpg";
     private static final String SP_KEY_WEATHER_INFO_STRING = "sp_key_weather_info_string";
     //    private static final String SP_KEY_CITY_ID = "sp_key_city_id";
     private static final String SP_KEY_CURRENT_CITY_ID = "sp_key_current_city_id";
@@ -35,10 +52,17 @@ public class MainTActivity extends FragmentActivity {
     private List<WeatherDetailFragment> fragmentList = new ArrayList<>(); //碎片链表
     private List<ImageView> mDots;//底部小圆点的集合
 
-    private String mCurrentCityId;
+    private String mCurrentCityId = null;
+    private int currentCityIdx = 0;
     //    private int screenWidth; //屏幕宽度
 
+    public DrawerLayout drawerLayout;
+    public SwipeRefreshLayout swipeRefresh;
     private ViewPager mViewPager;
+    private Button navButton;
+    private TextView titleCity;
+    private TextView titleUpdateTime;
+    private ImageView mBingPicImg;
 //    private LinearLayout mLinearLayout;//声明将来放置底部小圆点的LinearLayout
 
     @Override
@@ -53,9 +77,16 @@ public class MainTActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         mViewPager = findViewById(R.id.viewPager);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navButton = findViewById(R.id.nav_button);
+        titleCity = findViewById(R.id.title_city);
+        titleUpdateTime = findViewById(R.id.title_update_time);
+        swipeRefresh = findViewById(R.id.swipe_refresh);
+        mBingPicImg = findViewById(R.id.bing_pic_img);
         LinearLayout linearLayout = findViewById(R.id.viewpager_linerlayout);
 
-        int currentCityIdx = 0;
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+
         mDots = new ArrayList<>();//底部圆点集合的初始化
 
         initData();
@@ -154,10 +185,32 @@ public class MainTActivity extends FragmentActivity {
         });
         mViewPager.setCurrentItem(currentCityIdx);
         mDots.get(currentCityIdx).setImageResource(R.drawable.vp_point_enable_true);
+
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fragmentList.get(currentCityIdx).requestWeather(titleList.get(currentCityIdx));
+            }
+        });
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+        displayBackground();
+    }
+
+    public void notifyFragmentChanged(final Weather weather) {
+        if (mCurrentCityId != null && mCurrentCityId.equals(weather.basic.weatherId)) {
+            titleCity.setText(weather.basic.cityName);
+            titleUpdateTime.setText(weather.basic.update.updateTime.split(" ")[1]);
+        }
     }
 
     public void setSelect(int position) {
         mViewPager.setCurrentItem(position);
+        currentCityIdx = position;
     }
 
     private void initData() {
@@ -193,6 +246,45 @@ public class MainTActivity extends FragmentActivity {
 //        }
 //        initDots();
     }
+
+    private static final String SP_KEY_CITY_ID = "sp_key_city_id";
+
+//    private void requestWeather(final String cityId) {
+//        String weatherUrl = "https://free-api.heweather.com/v5/weather?city=" + cityId + "&key=f69c2ab4c3604c94b436bb0ae672560a";
+//        HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                final String responseText = response.body().string();
+//                final Weather weather = Utility.handleWeatherResponse(responseText);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (weather != null && "ok".equals(weather.status)) {
+//                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MainTActivity.this).edit();
+//                            editor.putString(SP_KEY_CITY_ID.concat(cityId), responseText);
+//                            editor.apply();
+////                            showWeatherInfo(weather);
+//                        } else {
+//                            Toast.makeText(MainTActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
+//                        }
+////                        swipeRefresh.setRefreshing(false);
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                e.printStackTrace();
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(MainTActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
+////                        swipeRefresh.setRefreshing(false);
+//                    }
+//                });
+//            }
+//        });
+//    }
 
 //    private void initDots() {
 //        mDots = new ArrayList<>();//底部圆点集合的初始化
@@ -263,5 +355,31 @@ public class MainTActivity extends FragmentActivity {
 //
 //        lastindex=index;   //lastindex 全局变量   记录小圆点的位置
 //    }
+
+    private void displayBackground() {
+//        SPLASH_BG_NAME
+        File f = new File(FileUtils.packageName2CachePath(MainTActivity.this.getPackageName()), SPLASH_BG_NAME);
+        if (f.exists()) {
+            Glide.with(MainTActivity.this)
+                    .load(f)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(mBingPicImg);
+        } else {
+            Glide.with(MainTActivity.this)
+                    .load(R.drawable.applegray)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(mBingPicImg);
+//        } else {
+//            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//            String bingPic = prefs.getString("bing_pic", null);
+//            if (bingPic != null) {
+//                Glide.with(this).load(bingPic).into(mBingPicImg);
+//            } else {
+//                loadBingPic();
+//            }
+        }
+    }
 
 }

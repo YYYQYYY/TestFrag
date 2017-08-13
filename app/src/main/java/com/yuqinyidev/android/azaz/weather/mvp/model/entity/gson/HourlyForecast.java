@@ -5,32 +5,29 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by RDX64 on 2017/6/18.
  * <p>
- * now	实况天气
+ * hourly_forecast	每小时预报
  * <p>
  * cond	天气状况
- * fl	体感温度
+ * date	日期
  * hum	相对湿度
- * pcpn	降水量
+ * pop	降水概率
  * pres	气压
  * tmp	温度
- * vis	能见度
  * wind	风力情况
  */
-public class Now {
+public class HourlyForecast {
     @SerializedName("cond")
     public WeatherCondition condition;
-    @SerializedName("fl")
-    public String faceTemperature;
+    public String date;
     @SerializedName("hum")
     public String relativeHumidity;
-    @SerializedName("pcpn")
-    public String precipitation;
+    @SerializedName("pop")
+    public String precipitationProbability;
     @SerializedName("pres")
     public String pressure;
     @SerializedName("tmp")
     public String temperature;
-    @SerializedName("vis")
-    public String visibility;
     @SerializedName("wind")
     public WindCondition windCondition;
+
 }
