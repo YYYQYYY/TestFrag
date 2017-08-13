@@ -64,7 +64,7 @@ public class MainTActivity extends FragmentActivity {
     private TextView titleCity;
     private TextView titleUpdateTime;
     private ImageView mBingPicImg;
-//    private LinearLayout mLinearLayout;//声明将来放置底部小圆点的LinearLayout
+    private LinearLayout mLinearLayout;//声明将来放置底部小圆点的LinearLayout
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class MainTActivity extends FragmentActivity {
         titleUpdateTime = findViewById(R.id.title_update_time);
 //        swipeRefresh = findViewById(R.id.swipe_refresh);
         mBingPicImg = findViewById(R.id.bing_pic_img);
-        LinearLayout linearLayout = findViewById(R.id.viewpager_linerlayout);
+        mLinearLayout = findViewById(R.id.viewpager_linerlayout);
 
 //        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
 
@@ -95,35 +95,6 @@ public class MainTActivity extends FragmentActivity {
         //获取屏幕宽度
 //        DisplayMetrics dm = getResources().getDisplayMetrics();
 //        screenWidth = dm.widthPixels;
-
-        //有多少个标题就有多少个碎片，动态添加
-        for (int i = 0; i < titleList.size(); i++) {
-            if (mCurrentCityId.equals(titleList.get(i))) {
-                currentCityIdx = i;
-            }
-            WeatherDetailFragment weatherDetailFragment = WeatherDetailFragment.newInstance(titleList.get(i).split(":")[0], i);
-            fragmentList.add(weatherDetailFragment);
-
-            final TextView tv = new TextView(this);
-            tv.setText(titleList.get(i));
-            tv.setGravity(Gravity.CENTER);
-            final int finalI = i;
-            tv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    tv.setTextColor(Color.RED);
-                    mViewPager.setCurrentItem(finalI);
-                }
-            });
-
-            //根据界面数量动态添加圆点
-            ImageView imageView = new ImageView(this);
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(35, 35));//设置ImageView的宽度和高度
-            imageView.setPadding(5, 5, 5, 5);//设置圆点的Padding，与周围的距离
-            imageView.setImageResource(R.drawable.vp_point_enable_false);//设置图片
-            mDots.add(imageView);//将该图片添加到圆点集合中
-            linearLayout.addView(imageView);//将图片添加到LinearLayout中
-        }
 
 //        //往导航栏添加标题
 //        if (titleList.size() <= 3) { //标题栏小于4个时，平分屏幕宽度
@@ -241,6 +212,36 @@ public class MainTActivity extends FragmentActivity {
             titleList.addAll(Arrays.asList(cityIds));
         }
         com.yuqinyidev.android.framework.utils.Utility.removeDuplicate(titleList);
+
+        //有多少个标题就有多少个碎片，动态添加
+        for (int i = 0; i < titleList.size(); i++) {
+            if (mCurrentCityId.equals(titleList.get(i))) {
+                currentCityIdx = i;
+            }
+            WeatherDetailFragment weatherDetailFragment = WeatherDetailFragment.newInstance(titleList.get(i).split(":")[0], i);
+            fragmentList.add(weatherDetailFragment);
+
+//            final TextView tv = new TextView(this);
+//            tv.setText(titleList.get(i));
+//            tv.setGravity(Gravity.CENTER);
+//            final int finalI = i;
+//            tv.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    tv.setTextColor(Color.RED);
+//                    mViewPager.setCurrentItem(finalI);
+//                }
+//            });
+
+            //根据界面数量动态添加圆点
+            ImageView imageView = new ImageView(this);
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(35, 35));//设置ImageView的宽度和高度
+            imageView.setPadding(5, 5, 5, 5);//设置圆点的Padding，与周围的距离
+            imageView.setImageResource(R.drawable.vp_point_enable_false);//设置图片
+            mDots.add(imageView);//将该图片添加到圆点集合中
+            mLinearLayout.addView(imageView);//将图片添加到LinearLayout中
+        }
+
 //        for (final String cityId : titleList) {
 //            String weatherString = prefs.getString(SP_KEY_CITY_ID.concat(cityId), null);
 //            if (StringUtils.isEmpty(weatherString)) {
