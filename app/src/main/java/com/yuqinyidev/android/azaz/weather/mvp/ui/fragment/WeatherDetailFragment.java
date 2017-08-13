@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,7 @@ public class WeatherDetailFragment extends Fragment {
     private int pageIndex;
 
 //    public DrawerLayout drawerLayout;
-//    public SwipeRefreshLayout swipeRefresh;
+    public SwipeRefreshLayout swipeRefresh;
 
     private ScrollView weatherLayout;
     private TextView degreeText;
@@ -75,7 +76,7 @@ public class WeatherDetailFragment extends Fragment {
     }
 
     public void initData() {
-//        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String weatherString = prefs.getString(SP_KEY_CITY_ID.concat(mCityId), null);
         if (StringUtils.isEmpty(weatherString)) {
@@ -85,12 +86,12 @@ public class WeatherDetailFragment extends Fragment {
             showWeatherInfo(weather);
 //            tv.setText(weatherString);
         }
-//        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                requestWeather(mCityId);
-//            }
-//        });
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(mCityId);
+            }
+        });
 //        navButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -127,7 +128,7 @@ public class WeatherDetailFragment extends Fragment {
                         } else {
                             Toast.makeText(getActivity(), "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
-//                        swipeRefresh.setRefreshing(false);
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -139,7 +140,7 @@ public class WeatherDetailFragment extends Fragment {
                     @Override
                     public void run() {
                         Toast.makeText(getActivity(), "获取天气信息失败", Toast.LENGTH_SHORT).show();
-//                        swipeRefresh.setRefreshing(false);
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -200,7 +201,7 @@ public class WeatherDetailFragment extends Fragment {
 //        navButton = view.findViewById(R.id.nav_button);
 //        titleCity = view.findViewById(R.id.title_city);
 //        titleUpdateTime = view.findViewById(R.id.title_update_time);
-//        swipeRefresh = view.findViewById(R.id.swipe_refresh);
+        swipeRefresh = view.findViewById(R.id.swipe_refresh);
 //        mBingPicImg = view.findViewById(R.id.bing_pic_img);
     }
 
