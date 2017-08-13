@@ -27,12 +27,13 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherDetailFragment extends Fragment {
-    public static final String ARG_CONTENT = "content";
-//    public static final String ARG_PAGE = "page_num";
+    public static final String ARG_CONTENT = "page_content";
+    public static final String ARG_PAGE = "page_index";
 
     private static final String SP_KEY_CITY_ID = "sp_key_city_id";
 
     private String mCityId = null;
+    private int pageIndex;
 
 //    public DrawerLayout drawerLayout;
 //    public SwipeRefreshLayout swipeRefresh;
@@ -51,7 +52,6 @@ public class WeatherDetailFragment extends Fragment {
 //    private TextView titleUpdateTime;
 //    private ImageView mBingPicImg;
 
-//    private int currentPageNum;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class WeatherDetailFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             mCityId = bundle.getString(ARG_CONTENT);
-//            currentPageNum = bundle.getInt(ARG_PAGE);
+            pageIndex = bundle.getInt(ARG_PAGE);
         }
     }
 
@@ -100,10 +100,10 @@ public class WeatherDetailFragment extends Fragment {
 //        displayBackground();
     }
 
-    public static WeatherDetailFragment newInstance(String cityId) {
+    public static WeatherDetailFragment newInstance(String cityId, int pageIndex) {
         Bundle bundle = new Bundle();
         bundle.putString(ARG_CONTENT, cityId);
-//        bundle.putInt(ARG_PAGE, pagerNum);
+        bundle.putInt(ARG_PAGE, pageIndex);
         WeatherDetailFragment weatherDetailFragment = new WeatherDetailFragment();
         weatherDetailFragment.setArguments(bundle);
         return weatherDetailFragment;
@@ -173,9 +173,9 @@ public class WeatherDetailFragment extends Fragment {
             aqiText.setText(weather.aqi.city.aqi);
             pm25Text.setText(weather.aqi.city.pm25);
         }
-        String comfort = "舒适度：" + weather.suggestion.comfort.briefIntroduction + "。\n　　　　" + weather.suggestion.comfort.detailInfo;
-        String carWash = "洗车指数：" + weather.suggestion.comfort.briefIntroduction + "。\n　　　　　" + weather.suggestion.carWash.detailInfo;
-        String sport = "运动建议：" + weather.suggestion.comfort.briefIntroduction + "。\n　　　　　" + weather.suggestion.sport.detailInfo;
+        String comfort = "舒适度：" + weather.suggestion.comfort.briefIntroduction + "。" + weather.suggestion.comfort.detailInfo;
+        String carWash = "洗车指数：" + weather.suggestion.carWash.briefIntroduction + "。" + weather.suggestion.carWash.detailInfo;
+        String sport = "运动建议：" + weather.suggestion.sport.briefIntroduction + "。" + weather.suggestion.sport.detailInfo;
         comfortText.setText(comfort);
         carWashText.setText(carWash);
         sportText.setText(sport);
@@ -183,7 +183,7 @@ public class WeatherDetailFragment extends Fragment {
 //TODO:启动服务处理需要修正
 //        Intent intent = new Intent(getActivity(), AutoUpdateWeatherService.class);
 //        startService(intent);
-        ((MainTActivity) getActivity()).notifyFragmentChanged(weather);
+        ((MainTActivity) getActivity()).notifyFragmentChanged(weather,pageIndex);
     }
 
     private void initController(View view) {

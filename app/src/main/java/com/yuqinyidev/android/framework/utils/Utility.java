@@ -9,6 +9,8 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -224,6 +226,12 @@ public class Utility {
             result[i] = temp[i];
         }
         return result;
+    }
+
+    public static void removeDuplicate(List arlList) {
+        HashSet h = new HashSet(arlList);
+        arlList.clear();
+        arlList.addAll(h);
     }
 
 }

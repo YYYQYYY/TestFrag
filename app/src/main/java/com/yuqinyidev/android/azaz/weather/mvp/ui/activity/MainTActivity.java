@@ -10,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,10 +57,10 @@ public class MainTActivity extends FragmentActivity {
     private int currentCityIdx = 0;
     //    private int screenWidth; //屏幕宽度
 
-    public DrawerLayout drawerLayout;
-    public SwipeRefreshLayout swipeRefresh;
+    //    public DrawerLayout drawerLayout;
+//    public SwipeRefreshLayout swipeRefresh;
     private ViewPager mViewPager;
-    private Button navButton;
+    //    private Button navButton;
     private TextView titleCity;
     private TextView titleUpdateTime;
     private ImageView mBingPicImg;
@@ -77,15 +78,15 @@ public class MainTActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         mViewPager = findViewById(R.id.viewPager);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navButton = findViewById(R.id.nav_button);
+//        drawerLayout = findViewById(R.id.drawer_layout);
+//        navButton = findViewById(R.id.nav_button);
         titleCity = findViewById(R.id.title_city);
         titleUpdateTime = findViewById(R.id.title_update_time);
-        swipeRefresh = findViewById(R.id.swipe_refresh);
+//        swipeRefresh = findViewById(R.id.swipe_refresh);
         mBingPicImg = findViewById(R.id.bing_pic_img);
         LinearLayout linearLayout = findViewById(R.id.viewpager_linerlayout);
 
-        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+//        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
 
         mDots = new ArrayList<>();//底部圆点集合的初始化
 
@@ -100,7 +101,7 @@ public class MainTActivity extends FragmentActivity {
             if (mCurrentCityId.equals(titleList.get(i))) {
                 currentCityIdx = i;
             }
-            WeatherDetailFragment weatherDetailFragment = WeatherDetailFragment.newInstance(titleList.get(i));
+            WeatherDetailFragment weatherDetailFragment = WeatherDetailFragment.newInstance(titleList.get(i).split(":")[0], i);
             fragmentList.add(weatherDetailFragment);
 
             final TextView tv = new TextView(this);
@@ -169,14 +170,8 @@ public class MainTActivity extends FragmentActivity {
 
             @Override
             public void onPageSelected(int position) {
+                Toast.makeText(MainTActivity.this, "selected " + titleList.get(position), Toast.LENGTH_SHORT).show();
                 setSelect(position);
-                Toast.makeText(MainTActivity.this, "selected" + (position + 1), Toast.LENGTH_SHORT).show();
-                for (int i = 0; i < titleList.size(); i++) {
-                    //将所有的圆点设置为为选中时候的图片
-                    mDots.get(i).setImageResource(R.drawable.vp_point_enable_false);
-                }
-                //将被选中的图片中的圆点设置为被选中的时候的图片
-                mDots.get(position).setImageResource(R.drawable.vp_point_enable_true);
             }
 
             @Override
@@ -185,57 +180,67 @@ public class MainTActivity extends FragmentActivity {
         });
         mViewPager.setCurrentItem(currentCityIdx);
         mDots.get(currentCityIdx).setImageResource(R.drawable.vp_point_enable_true);
+        mViewPager.getAdapter().notifyDataSetChanged();
 
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                fragmentList.get(currentCityIdx).requestWeather(titleList.get(currentCityIdx));
-            }
-        });
-        navButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
+//        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                fragmentList.get(currentCityIdx).requestWeather(titleList.get(currentCityIdx));
+//            }
+//        });
+//        navButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerLayout.openDrawer(GravityCompat.START);
+//            }
+//        });
         displayBackground();
     }
 
-    public void notifyFragmentChanged(final Weather weather) {
-        if (mCurrentCityId != null && mCurrentCityId.equals(weather.basic.weatherId)) {
-            titleCity.setText(weather.basic.cityName);
-            titleUpdateTime.setText(weather.basic.update.updateTime.split(" ")[1]);
-        }
+    public void notifyFragmentChanged(final Weather weather, int pageIndex) {
+//        Log.v("abcd", titleList.size() + "::currentCityIdx::" + currentCityIdx+ "::pageIndex::" + pageIndex);
+        titleUpdateTime.setText(weather.basic.update.updateTime.split(" ")[1]);
     }
 
     public void setSelect(int position) {
         mViewPager.setCurrentItem(position);
         currentCityIdx = position;
+        mCurrentCityId = titleList.get(position);
+
+        for (int i = 0; i < mDots.size(); i++) {
+            //将所有的圆点设置为为选中时候的图片
+            mDots.get(i).setImageResource(R.drawable.vp_point_enable_false);
+        }
+        //将被选中的图片中的圆点设置为被选中的时候的图片
+        mDots.get(position).setImageResource(R.drawable.vp_point_enable_true);
+        titleCity.setText(titleList.get(position).split(":")[1]);
     }
 
     private void initData() {
         titleList.clear();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainTActivity.this);
         String ps = prefs.getString(SP_KEY_WEATHER_INFO_STRING, null);
-        mCurrentCityId = prefs.getString(SP_KEY_CURRENT_CITY_ID, "CN101210101");// 所在城市的城市ID
-        String[] cityIds;
+        mCurrentCityId = prefs.getString(SP_KEY_CURRENT_CITY_ID, "CN101210101:杭州");// 所在城市的城市ID
 
-        if (StringUtils.isEmpty(ps)) {
-            cityIds = new String[]{
-                    "CN101210101",
-                    "CN101280601",
-                    "CN101210203",
-                    "CN101240206",
-                    "CN101210102",
-                    "CN101010100"
+        if (!StringUtils.isEmpty(ps)) {
+            titleList.addAll(Arrays.asList(ps.split("\\|")));
+        }
+
+        if (titleList.size() < 6) {
+            String[] cityIds = new String[]{
+                    "CN101210101:杭州",
+                    "CN101280601:深圳",
+                    "CN101210203:安吉",
+                    "CN101240206:永修",
+                    "CN101210102:萧山",
+                    "CN101010100:北京"
             };
             SharedPreferences.Editor editor = prefs.edit();
             String cityIdStr = StringUtils.join(cityIds, '|');
             editor.putString(SP_KEY_WEATHER_INFO_STRING, cityIdStr).apply();
-        } else {
-            cityIds = ps.split("\\|");
+            titleList.addAll(Arrays.asList(cityIds));
         }
-        titleList.addAll(Arrays.asList(cityIds));
+        com.yuqinyidev.android.framework.utils.Utility.removeDuplicate(titleList);
 //        for (final String cityId : titleList) {
 //            String weatherString = prefs.getString(SP_KEY_CITY_ID.concat(cityId), null);
 //            if (StringUtils.isEmpty(weatherString)) {
