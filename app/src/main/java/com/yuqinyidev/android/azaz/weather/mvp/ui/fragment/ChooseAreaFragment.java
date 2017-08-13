@@ -220,7 +220,7 @@ public class ChooseAreaFragment extends Fragment {
             progressDialog.setMessage("正在加载...");
             progressDialog.setCanceledOnTouchOutside(false);
         }
-        progressDialog.show();
+//        progressDialog.show();
     }
 
     private void closeProgressDialog() {

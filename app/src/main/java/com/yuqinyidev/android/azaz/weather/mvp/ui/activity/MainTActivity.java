@@ -57,10 +57,10 @@ public class MainTActivity extends FragmentActivity {
     private int currentCityIdx = 0;
     //    private int screenWidth; //屏幕宽度
 
-    //    public DrawerLayout drawerLayout;
-//    public SwipeRefreshLayout swipeRefresh;
+    public DrawerLayout drawerLayout;
+    //    public SwipeRefreshLayout swipeRefresh;
     private ViewPager mViewPager;
-    //    private Button navButton;
+    private Button navButton;
     private TextView titleCity;
     private TextView titleUpdateTime;
     private ImageView mBingPicImg;
@@ -78,8 +78,8 @@ public class MainTActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         mViewPager = findViewById(R.id.viewPager);
-//        drawerLayout = findViewById(R.id.drawer_layout);
-//        navButton = findViewById(R.id.nav_button);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navButton = findViewById(R.id.nav_button);
         titleCity = findViewById(R.id.title_city);
         titleUpdateTime = findViewById(R.id.title_update_time);
 //        swipeRefresh = findViewById(R.id.swipe_refresh);
@@ -159,12 +159,12 @@ public class MainTActivity extends FragmentActivity {
 //                fragmentList.get(currentCityIdx).requestWeather(titleList.get(currentCityIdx));
 //            }
 //        });
-//        navButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                drawerLayout.openDrawer(GravityCompat.START);
-//            }
-//        });
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
         displayBackground();
     }
 
