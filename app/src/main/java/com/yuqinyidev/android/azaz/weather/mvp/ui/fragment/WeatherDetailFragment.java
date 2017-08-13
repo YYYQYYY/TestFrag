@@ -1,10 +1,10 @@
 package com.yuqinyidev.android.azaz.weather.mvp.ui.fragment;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -22,8 +22,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yuqinyidev.android.azaz.R;
 import com.yuqinyidev.android.azaz.weather.mvp.model.entity.gson.Forecast;
 import com.yuqinyidev.android.azaz.weather.mvp.model.entity.gson.Weather;
-import com.yuqinyidev.android.azaz.weather.mvp.model.service.AutoUpdateWeatherService;
-import com.yuqinyidev.android.azaz.weather.mvp.ui.activity.MainTActivity;
 import com.yuqinyidev.android.azaz.weather.mvp.util.HttpUtil;
 import com.yuqinyidev.android.azaz.weather.mvp.util.Utility;
 import com.yuqinyidev.android.framework.utils.FileUtils;
@@ -31,8 +29,6 @@ import com.yuqinyidev.android.framework.utils.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -82,13 +78,16 @@ public class WeatherDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_weather_detail, container, false);
         tv = view.findViewById(R.id.tv);
+
         initController(view);
+
         initData();
 
         return view;
     }
 
     public void initData() {
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String weatherString = prefs.getString(SP_KEY_CITY_ID.concat(mCityId), null);
         if (StringUtils.isEmpty(weatherString)) {
@@ -98,6 +97,18 @@ public class WeatherDetailFragment extends Fragment {
             showWeatherInfo(weather);
 //            tv.setText(weatherString);
         }
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(mCityId);
+            }
+        });
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
         displayBackground();
     }
 
@@ -126,9 +137,11 @@ public class WeatherDetailFragment extends Fragment {
                             editor.putString(SP_KEY_CITY_ID.concat(cityId), responseText);
                             editor.apply();
                             tv.setText(responseText);
+                            showWeatherInfo(weather);
                         } else {
                             Toast.makeText(getActivity(), "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -140,6 +153,7 @@ public class WeatherDetailFragment extends Fragment {
                     @Override
                     public void run() {
                         Toast.makeText(getActivity(), "获取天气信息失败", Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }

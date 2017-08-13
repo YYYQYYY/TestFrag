@@ -2,6 +2,7 @@ package com.yuqinyidev.android.azaz.weather.mvp.ui.activity;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
@@ -18,6 +19,7 @@ import com.yuqinyidev.android.azaz.R;
 import com.yuqinyidev.android.azaz.weather.mvp.ui.adapter.FragmentWeatherAdapter;
 import com.yuqinyidev.android.azaz.weather.mvp.ui.fragment.WeatherDetailFragment;
 import com.yuqinyidev.android.framework.utils.StringUtils;
+import com.yuqinyidev.android.framework.utils.UiUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +44,12 @@ public class MainTActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        UiUtils.transparentStatus(MainTActivity.this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_main);
 
         mViewPager = findViewById(R.id.viewPager);
