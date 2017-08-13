@@ -58,11 +58,4 @@
 
     </android.support.v4.widget.DrawerLayout>
 
-    <TextView
-        android:id="@+id/tv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="20sp" />
-
 </FrameLayout>

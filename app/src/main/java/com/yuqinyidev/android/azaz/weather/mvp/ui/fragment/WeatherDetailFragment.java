@@ -60,8 +60,6 @@ public class WeatherDetailFragment extends Fragment {
     private TextView sportText;
     private ImageView mBingPicImg;
 
-    private TextView tv;
-
 //    private int currentPageNum;
 
     @Override
@@ -77,7 +75,6 @@ public class WeatherDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_weather_detail, container, false);
-        tv = view.findViewById(R.id.tv);
 
         initController(view);
 
@@ -136,7 +133,6 @@ public class WeatherDetailFragment extends Fragment {
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
                             editor.putString(SP_KEY_CITY_ID.concat(cityId), responseText);
                             editor.apply();
-                            tv.setText(responseText);
                             showWeatherInfo(weather);
                         } else {
                             Toast.makeText(getActivity(), "获取天气信息失败", Toast.LENGTH_SHORT).show();
