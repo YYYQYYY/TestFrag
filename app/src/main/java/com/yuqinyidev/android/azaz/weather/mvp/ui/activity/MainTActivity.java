@@ -1,11 +1,15 @@
 package com.yuqinyidev.android.azaz.weather.mvp.ui.activity;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +32,7 @@ import com.yuqinyidev.android.azaz.weather.mvp.ui.adapter.FragmentWeatherAdapter
 import com.yuqinyidev.android.azaz.weather.mvp.ui.fragment.WeatherDetailFragment;
 import com.yuqinyidev.android.azaz.weather.mvp.util.HttpUtil;
 import com.yuqinyidev.android.azaz.weather.mvp.util.Utility;
+import com.yuqinyidev.android.framework.utils.AssetsUtils;
 import com.yuqinyidev.android.framework.utils.FileUtils;
 import com.yuqinyidev.android.framework.utils.StringUtils;
 import com.yuqinyidev.android.framework.utils.UiUtils;
@@ -76,6 +81,13 @@ public class MainTActivity extends FragmentActivity {
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_main);
+
+        if (ContextCompat.checkSelfPermission(MainTActivity.this, Manifest.permission_group.STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            AssetsUtils.copyFilesFromAssets(MainTActivity.this, "yyyqyyy.db", FileUtils.packageName2DBPath(getPackageName()));
+        }
+
 
         mViewPager = findViewById(R.id.viewPager);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -166,6 +178,17 @@ public class MainTActivity extends FragmentActivity {
             }
         });
         displayBackground();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1) {
+            if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[0]) && PackageManager.PERMISSION_GRANTED == grantResults[0]) {
+                AssetsUtils.copyFilesFromAssets(MainTActivity.this, "yyyqyyy.db", FileUtils.packageName2DBPath(getPackageName()));
+            } else {
+                finish();
+            }
+        }
     }
 
     public void notifyFragmentChanged(final Weather weather, int pageIndex) {

@@ -171,47 +171,47 @@ public class ChooseAreaFragment extends Fragment {
     }
 
     private void queryFromServer(String address, final String queryType) {
-        showProgressDialog();
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        closeProgressDialog();
-                        Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseText = response.body().string();
-                boolean result = false;
-                if ("province".equals(queryType)) {
-                    result = Utility.handleProvinceResponse(responseText);
-                } else if ("city".equals(queryType)) {
-                    result = Utility.handleCityResponse(responseText, selectedProvince.getId());
-                } else if ("county".equals(queryType)) {
-                    result = Utility.handleCountyResponse(responseText, selectedCity.getId());
-                }
-                if (result) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            closeProgressDialog();
-                            if ("province".equals(queryType)) {
-                                queryProvinces();
-                            } else if ("city".equals(queryType)) {
-                                queryCities();
-                            } else if ("county".equals(queryType)) {
-                                queryCounties();
-                            }
-                        }
-                    });
-                }
-            }
-        });
+//        showProgressDialog();
+//        HttpUtil.sendOkHttpRequest(address, new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                getActivity().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        closeProgressDialog();
+//                        Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String responseText = response.body().string();
+//                boolean result = false;
+//                if ("province".equals(queryType)) {
+//                    result = Utility.handleProvinceResponse(responseText);
+//                } else if ("city".equals(queryType)) {
+//                    result = Utility.handleCityResponse(responseText, selectedProvince.getId());
+//                } else if ("county".equals(queryType)) {
+//                    result = Utility.handleCountyResponse(responseText, selectedCity.getId());
+//                }
+//                if (result) {
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            closeProgressDialog();
+//                            if ("province".equals(queryType)) {
+//                                queryProvinces();
+//                            } else if ("city".equals(queryType)) {
+//                                queryCities();
+//                            } else if ("county".equals(queryType)) {
+//                                queryCounties();
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        });
     }
 
     private void showProgressDialog() {
@@ -220,7 +220,7 @@ public class ChooseAreaFragment extends Fragment {
             progressDialog.setMessage("正在加载...");
             progressDialog.setCanceledOnTouchOutside(false);
         }
-//        progressDialog.show();
+        progressDialog.show();
     }
 
     private void closeProgressDialog() {
